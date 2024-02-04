@@ -1,3 +1,8 @@
+#udelat cas na release prisery
+#alpha obrazky
+#udelat priseru a postunovat ji k mine
+#kolize miny s priserou
+#zasobnik min
 #central xy?
 # predelat na image
 # udelat miny a kolize na miny
@@ -27,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         #self.image = pygame.Surface([width,height])
         #self.image.fill(color)
         #pygame.draw.ellipse(self.image, color, [250, 250, width, height])
-        self.image = pygame.image.load("minebot1.png").convert();
+        self.image = pygame.image.load("minebot4.png").convert();
         self.image.set_colorkey(white);
         self.rect = self.image.get_rect()
         #pygame.draw.rect(self.image, red, [0, 0, width, height], 1)
@@ -39,21 +44,20 @@ class Prisera(pygame.sprite.Sprite):
         self.image = pygame.Surface([width,height])
         self.image.fill(color)
         self.rect = self.image.get_rect()
-        pygame.draw.ellipse(self.image, color,[0,0,width,height])   
-        self.rect.x = (random.randint(0,width))
-        self.rect.y = (random.randint(0,height)) 
+        
+        self.rect.center = [(random.randint(0,width)), (random.randint(0,height)) ]
+        pygame.draw.circle(self.image, color,self.rect.center,10)   
+    def autoPohyb():
+
         
 class Mina(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("bomba1.png").convert();
+        self.image = pygame.image.load("mina1.png").convert();
         self.image.set_colorkey(white);
-        #self.rect = self.image.get_rect()
-        origos = self.image.get_bounding_rect()
-        rect = pygame.Surface(origos.size)
-        self.rect.x = player.rect.x
-        self.rect.y = player.rect.y
-
+        self.rect = self.image.get_rect()
+        self.rect.center = player.rect.center
+       
 player = Player(blue,20,20)
 #global player x,y synonym 
 prisera = Prisera(red,15,15)
@@ -81,14 +85,18 @@ while True:
 
         #game code
         
-        player.rect.x = pos[0]
-        player.rect.y = pos[1]
+        player.rect.center = pos[0],pos[1]
+
+
+
+        """
         stret = pygame.sprite.spritecollide(player,priseryList,True)
+        
         if stret:
             prisera = Prisera(red,15,15)
             priseryList.add(prisera)
             allSpritesList.add(prisera)
-
+        """
         screen.fill(white)
         allSpritesList.draw(screen)
         
