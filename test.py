@@ -1,4 +1,4 @@
-#udelat cas na release prisery
+#automove, aspon by se to melo hejbat nejakym smerem po nejaky cas
 #alpha obrazky
 #udelat priseru a postunovat ji k mine
 #kolize miny s priserou
@@ -11,7 +11,7 @@
 
 import random
 import pygame
-from sys import exit
+import pygame.gfxdraw
 
 
 black = (  0,   0,   0)
@@ -19,15 +19,40 @@ blue = (0,0,255)
 white = (255, 255, 255)
 red   = (255,   0,   0)
 width = 800
-height = 600 
+height = 600
+timeRespown = 10000
 
 pygame.init()
 pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((width,height))
-clock = pygame.time.Clock()
 
+clock = pygame.time.Clock()
+#kazdych  3sekund event
+timeInterval =  3000
+timerEvent =pygame.USEREVENT+1
+pygame.time.set_timer(timerEvent,timeInterval)
+
+ATOM_IMG = pygame.Surface((30, 30), pygame.SRCALPHA)
+# draw.circle is not anti-aliased and looks rather ugly.
+# pygame.draw.circle(ATOM_IMG, (0, 255, 0), (15, 15), 15)
+# gfxdraw.aacircle looks a bit better.
+pygame.gfxdraw.aacircle(ATOM_IMG, 15, 15, 14, (0, 255, 0))
+pygame.gfxdraw.filled_circle(ATOM_IMG, 15, 15, 14, (0, 255, 0))
+
+def bezier(p0, p1, p2, t):
+    px = p0[0]*(1-t)**2 + 2*(1-t)*t*p1[0] + p2[0]*t**2
+    py = p0[1]*(1-t)**2 + 2*(1-t)*t*p1[1] + p2[1]*t**2   
+    return px, py
+
+class Atom(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = ATOM_IMG
+        self.rect = self.image.get_rect(center=[(random.randint(0,width)), (random.randint(0,height)) ])
+    def autoMove(self):
+        self.rect.move_ip(random.randint(0, 999), random.randint(0, 999))
 class Player(pygame.sprite.Sprite):
-    def __init__(self, color,width,height):
+    def __init__(self):
         super().__init__()
         #self.image = pygame.Surface([width,height])
         #self.image.fill(color)
@@ -39,15 +64,15 @@ class Player(pygame.sprite.Sprite):
        
 
 class Prisera(pygame.sprite.Sprite):
-    def __init__(self, color,width,height):
+    def __init__(self, color,radius):
         super().__init__()
-        self.image = pygame.Surface([width,height])
+        self.image = pygame.Surface([10,10])
         self.image.fill(color)
         self.rect = self.image.get_rect()
         
         self.rect.center = [(random.randint(0,width)), (random.randint(0,height)) ]
-        pygame.draw.circle(self.image, color,self.rect.center,10)   
-    def autoPohyb():
+        pygame.draw.circle(self.image, color,self.rect.center,radius)   
+   
 
         
 class Mina(pygame.sprite.Sprite):
@@ -58,20 +83,15 @@ class Mina(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = player.rect.center
        
-player = Player(blue,20,20)
+player = Player()
+prisera = Atom()
 #global player x,y synonym 
-prisera = Prisera(red,15,15)
-#playerList = pygame.sprite.Group()
-#playerList.add(player)
+playerList = pygame.sprite.Group()
+playerList.add(player)
 priseryList = pygame.sprite.Group()
-priseryList.add(prisera)
-
 minyList = pygame.sprite.Group()
-
-
 allSpritesList = pygame.sprite.Group()
 allSpritesList.add(player)
-allSpritesList.add(prisera)
 while True:
     pos = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -82,6 +102,12 @@ while True:
             mina = Mina()
             minyList.add(mina)
             allSpritesList.add(mina)
+        if event.type == timerEvent:
+            #prisera = Prisera (blue,10)
+            prisera = Atom()
+            priseryList.add(prisera)
+            allSpritesList.add(prisera)
+            
 
         #game code
         
@@ -99,7 +125,6 @@ while True:
         """
         screen.fill(white)
         allSpritesList.draw(screen)
-        
-        
+        prisera.autoMove()        
         pygame.display.update()
         clock.tick(60)
