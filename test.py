@@ -6,7 +6,7 @@
 #central xy?
 # predelat na image
 # udelat miny a kolize na miny
-
+#https://stackoverflow.com/questions/74070512/how-to-make-sprite-move-to-point-along-a-curve-in-pygame
 # http://programarcadegames.com/index.php?chapter=introduction_to_sprites
 
 import random
